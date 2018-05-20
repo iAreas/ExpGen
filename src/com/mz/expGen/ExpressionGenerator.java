@@ -28,7 +28,7 @@ public class ExpressionGenerator {
 	private int maxDecimalsInResult = -1;
 
 	private boolean useDecimalNumbers = false;
-	private boolean allowBrackets = true;
+    private boolean allowParentheses = true;
 
 	/**
 	 * Class used to generate random mathematical expressions
@@ -84,11 +84,11 @@ public class ExpressionGenerator {
 					continue;
 				}
 
-				sb.append(" " + operator.getCharacter() + " ");
+                sb.append(" ").append(operator.getCharacter()).append(" ");
 				// Appends the generated operator
 
 				boolean inBrackets = false;
-				if (this.rnd.nextBoolean() && i != this.length - 1 && allowBrackets) {
+                if (this.rnd.nextBoolean() && i != this.length - 1 && allowParentheses) {
 					sb.append("(");
 					inBrackets = true;
 					brackets++;
@@ -129,8 +129,7 @@ public class ExpressionGenerator {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				continue;
-			}
+            }
 		}
 		return result;
 	}
@@ -326,15 +325,23 @@ public class ExpressionGenerator {
 		return this;
 	}
 
+    /**
+     * Copy of {@link #setAllowBrackets(boolean)}, name changed.
+     */
+    public void setAllowParentheses(boolean allowallowParentheses) {
+        this.allowParentheses = allowallowParentheses;
+    }
+
 	/**
 	 * Set this to false to disable usage of brackets in generated expressions.
 	 * Default is true
-	 * 
+     *
+     * @deprecated Use {@link #setAllowParentheses(boolean)} instead.
 	 * @param allowBrackets
 	 *            true to allow brackets, false to disallow brackets
 	 */
 	public void setAllowBrackets(boolean allowBrackets) {
-		this.allowBrackets = allowBrackets;
+        this.allowParentheses = allowBrackets;
 	}
 
 	public Operator[] getOperators() {
@@ -388,12 +395,10 @@ public class ExpressionGenerator {
 		return nextInt(this.minNum, this.maxNum);
 	}
 
-	private double nextDouble(double min, double max, int decimalPlaces) {
+    private double nextDouble(double origin, double bound, int decimalPlaces) {
 		double r = (this.rnd.nextLong() >>> 11) * (0x1.0p-53);
 
-		double origin = min;
-		double bound = max;
-		if (origin < bound) {
+        if (origin < bound) {
 			r = r * (bound - origin) + origin;
 			if (r >= bound)
 				r = Double.longBitsToDouble(Double.doubleToLongBits(bound) - 1);
@@ -416,10 +421,9 @@ public class ExpressionGenerator {
 		}
 	}
 
-	private int nextInt(int min, int max) {
+    private int nextInt(int origin, int max) {
 		int r = mix32(this.seed.nextLong());
 
-		int origin = min;
 		int bound = max + 1;
 		if (origin < bound) {
 			int n = bound - origin, m = n - 1;
